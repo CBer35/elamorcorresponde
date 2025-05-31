@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسوأ أغنية في العالم</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for a more polished look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Tailwind gray-900 */
+        }
+
+        .video-container {
+            background-color: #1f2937; /* Tailwind gray-800 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden; /* To keep video corners rounded */
+        }
+
+        .controls-bar {
+            background-color: rgba(31, 41, 55, 0.8); /* Tailwind gray-800 with opacity */
+            backdrop-filter: blur(10px);
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .video-container:hover .controls-bar {
+            opacity: 1;
+        }
+
+        .control-button {
+            color: #d1d5db; /* Tailwind gray-300 */
+            transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+
+        .control-button:hover {
+            color: #ffffff; /* White */
+            transform: scale(1.1);
+        }
+
+        .control-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Custom seek bar styling */
+        #seekBar {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #4b5563; /* Tailwind gray-600 */
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #seekBar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6; /* Tailwind blue-500 */
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+        }
+        #seekBar::-webkit-slider-thumb:hover {
+            background: #2563eb; /* Tailwind blue-600 */
+        }
+
+        #seekBar::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6; /* Tailwind blue-500 */
+            border-radius: 50%;
+            cursor: pointer;
+            border: none; /* Important for Firefox */
+            transition: background 0.2s ease-in-out;
+        }
+        #seekBar::-moz-range-thumb:hover {
+            background: #2563eb; /* Tailwind blue-600 */
+        }
+
+        #volumeBar {
+             -webkit-appearance: none;
+            appearance: none;
+            width: 80px; /* Adjust as needed */
+            height: 6px;
+            background: #4b5563; /* Tailwind gray-600 */
+            border-radius: 3px;
+            cursor: pointer;
+            outline: none;
+        }
+        #volumeBar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #d1d5db; /* Tailwind gray-300 */
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #volumeBar::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #d1d5db; /* Tailwind gray-300 */
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .time-display {
+            font-size: 0.875rem; /* text-sm */
+            color: #d1d5db; /* Tailwind gray-300 */
+            min-width: 50px; /* Ensure consistent width */
+        }
+
+        /* Hide default video controls */
+        video::-webkit-media-controls {
+            display:none !important;
+        }
+        video::-moz-media-controls {
+            display:none !important;
+        }
+        video::media-controls {
+            display:none !important;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-3xl mx-auto">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-white mb-6">أسوأ أغنية في العالم</h1>
+        <div id="videoPlayerContainer" class="video-container relative">
+            <video id="videoPlayer" class="w-full h-auto rounded-t-lg aspect-video" preload="metadata">
+                <source src="https://huggingface.co/spaces/CBer35/asd/resolve/main/El%20amor%20corresponde%20%5B1HUc1UtNy4s%5D.mp4?download=true" type="video/mp4">
+                Tu navegador no soporta el vídeo de HTML5.
+            </video>
+            <div id="videoOverlay" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 bg-black bg-opacity-30 pointer-events-none">
+                <button id="overlayPlayButton" class="control-button text-6xl text-white opacity-80 hover:opacity-100 pointer-events-auto">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+
+            <div class="controls-bar absolute bottom-0 left-0 right-0 p-2 sm:p-4 opacity-0 hover:opacity-100 focus-within:opacity-100 rounded-b-lg">
+                <div class="flex items-center mb-2">
+                    <span id="currentTime" class="time-display text-left">0:00</span>
+                    <input type="range" id="seekBar" value="0" step="0.01" class="mx-2 flex-grow">
+                    <span id="duration" class="time-display text-right">0:00</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <button id="playPauseBtn" class="control-button text-xl sm:text-2xl" aria-label="Reproducir/Pausar">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button id="reloadBtn" class="control-button text-lg sm:text-xl" aria-label="Recargar">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button id="skipBackwardBtn" class="control-button text-lg sm:text-xl" aria-label="Retroceder 10 segundos">
+                            <i class="fas fa-undo"></i> </button>
+                        <button id="skipForwardBtn" class="control-button text-lg sm:text-xl" aria-label="Adelantar 10 segundos">
+                            <i class="fas fa-redo"></i> </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <button id="volumeBtn" class="control-button text-lg sm:text-xl" aria-label="Silenciar/Activar Sonido">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <input type="range" id="volumeBar" min="0" max="1" step="0.01" value="1" class="w-16 sm:w-20">
+                        <button id="fullscreenBtn" class="control-button text-lg sm:text-xl" aria-label="Pantalla Completa">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <p class="text-center text-gray-400 mt-4 text-sm">
+            Video de demostración. Controles aparecen al pasar el cursor sobre el video.
+        </p>
+    </div>
+
+    <script>
+        const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+        const video = document.getElementById('videoPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const reloadBtn = document.getElementById('reloadBtn');
+        const skipBackwardBtn = document.getElementById('skipBackwardBtn');
+        const skipForwardBtn = document.getElementById('skipForwardBtn');
+        const seekBar = document.getElementById('seekBar');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const durationDisplay = document.getElementById('duration');
+        const volumeBtn = document.getElementById('volumeBtn');
+        const volumeBar = document.getElementById('volumeBar');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const videoOverlay = document.getElementById('videoOverlay');
+        const overlayPlayButton = document.getElementById('overlayPlayButton');
+
+        let controlsTimeout;
+
+        // --- Helper Functions ---
+        function formatTime(timeInSeconds) {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = Math.floor(timeInSeconds % 60).toString().padStart(2, '0');
+            return `${minutes}:${seconds}`;
+        }
+
+        function togglePlayPauseIcon() {
+            const icon = playPauseBtn.querySelector('i');
+            const overlayIcon = overlayPlayButton.querySelector('i');
+            if (video.paused || video.ended) {
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+                overlayIcon.classList.remove('fa-pause');
+                overlayIcon.classList.add('fa-play');
+                playPauseBtn.setAttribute('aria-label', 'Reproducir');
+                videoOverlay.style.opacity = '1';
+            } else {
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+                overlayIcon.classList.remove('fa-play');
+                overlayIcon.classList.add('fa-pause');
+                playPauseBtn.setAttribute('aria-label', 'Pausar');
+                videoOverlay.style.opacity = '0';
+            }
+        }
+
+        function toggleVolumeIcon() {
+            const icon = volumeBtn.querySelector('i');
+            if (video.muted || video.volume === 0) {
+                icon.classList.remove('fa-volume-up', 'fa-volume-down');
+                icon.classList.add('fa-volume-mute');
+                volumeBtn.setAttribute('aria-label', 'Activar Sonido');
+            } else if (video.volume > 0 && video.volume <= 0.5) {
+                icon.classList.remove('fa-volume-up', 'fa-volume-mute');
+                icon.classList.add('fa-volume-down');
+                volumeBtn.setAttribute('aria-label', 'Silenciar');
+            } else {
+                icon.classList.remove('fa-volume-down', 'fa-volume-mute');
+                icon.classList.add('fa-volume-up');
+                volumeBtn.setAttribute('aria-label', 'Silenciar');
+            }
+        }
+
+        function toggleFullscreenIcon() {
+            const icon = fullscreenBtn.querySelector('i');
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+                fullscreenBtn.setAttribute('aria-label', 'Salir de Pantalla Completa');
+            } else {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+                fullscreenBtn.setAttribute('aria-label', 'Pantalla Completa');
+            }
+        }
+
+        // --- Event Listeners ---
+        playPauseBtn.addEventListener('click', () => {
+            if (video.paused || video.ended) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        });
+
+        overlayPlayButton.addEventListener('click', () => {
+            if (video.paused || video.ended) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        });
+        
+        video.addEventListener('click', () => {
+             if (video.paused || video.ended) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        });
+
+
+        reloadBtn.addEventListener('click', () => {
+            video.load();
+            video.play(); // Optional: auto-play after reload
+        });
+
+        skipBackwardBtn.addEventListener('click', () => {
+            video.currentTime -= 10;
+        });
+
+        skipForwardBtn.addEventListener('click', () => {
+            video.currentTime += 10;
+        });
+
+        video.addEventListener('loadedmetadata', () => {
+            durationDisplay.textContent = formatTime(video.duration);
+            seekBar.max = video.duration; // Set max for direct value setting
+            togglePlayPauseIcon(); // Ensure correct icon on load
+        });
+
+        video.addEventListener('timeupdate', () => {
+            seekBar.value = video.currentTime;
+            currentTimeDisplay.textContent = formatTime(video.currentTime);
+        });
+
+        video.addEventListener('play', togglePlayPauseIcon);
+        video.addEventListener('pause', togglePlayPauseIcon);
+        video.addEventListener('ended', togglePlayPauseIcon);
+
+
+        seekBar.addEventListener('input', () => {
+            video.currentTime = parseFloat(seekBar.value);
+        });
+
+        volumeBtn.addEventListener('click', () => {
+            video.muted = !video.muted;
+            if (!video.muted && video.volume === 0) { // If unmuting and volume was 0, set to a default
+                video.volume = 0.5;
+                volumeBar.value = 0.5;
+            } else if (video.muted) {
+                 // When muting, we don't change the volumeBar value, so it remembers the previous level.
+            }
+            toggleVolumeIcon();
+        });
+
+        volumeBar.addEventListener('input', (e) => {
+            video.volume = e.target.value;
+            video.muted = e.target.value === '0'; // Mute if volume is set to 0
+            toggleVolumeIcon();
+        });
+        
+        // Set initial volume icon based on default video volume
+        video.addEventListener('volumechange', toggleVolumeIcon);
+
+
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                if (videoPlayerContainer.requestFullscreen) {
+                    videoPlayerContainer.requestFullscreen();
+                } else if (videoPlayerContainer.mozRequestFullScreen) { // Firefox
+                    videoPlayerContainer.mozRequestFullScreen();
+                } else if (videoPlayerContainer.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    videoPlayerContainer.webkitRequestFullscreen();
+                } else if (videoPlayerContainer.msRequestFullscreen) { // IE/Edge
+                    videoPlayerContainer.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        });
+
+        document.addEventListener('fullscreenchange', toggleFullscreenIcon);
+        document.addEventListener('webkitfullscreenchange', toggleFullscreenIcon);
+        document.addEventListener('mozfullscreenchange', toggleFullscreenIcon);
+        document.addEventListener('MSFullscreenChange', toggleFullscreenIcon);
+
+        // Show/Hide controls bar
+        videoPlayerContainer.addEventListener('mouseenter', () => {
+            clearTimeout(controlsTimeout);
+            videoPlayerContainer.querySelector('.controls-bar').style.opacity = '1';
+        });
+
+        videoPlayerContainer.addEventListener('mousemove', () => {
+            clearTimeout(controlsTimeout);
+            videoPlayerContainer.querySelector('.controls-bar').style.opacity = '1';
+            if (!video.paused && !video.ended) { // Only hide if playing
+                 controlsTimeout = setTimeout(() => {
+                    videoPlayerContainer.querySelector('.controls-bar').style.opacity = '0';
+                }, 3000); // Hide after 3 seconds of inactivity
+            }
+        });
+
+        videoPlayerContainer.addEventListener('mouseleave', () => {
+            if (!video.paused && !video.ended) { // Only hide if playing
+                 controlsTimeout = setTimeout(() => {
+                    videoPlayerContainer.querySelector('.controls-bar').style.opacity = '0';
+                }, 500); // Shorter delay on mouse leave
+            }
+        });
+        
+        // Initial setup
+        togglePlayPauseIcon();
+        toggleVolumeIcon(); // Set initial volume icon
+        if (video.readyState >= 1) { // If metadata is already loaded
+             durationDisplay.textContent = formatTime(video.duration);
+             seekBar.max = video.duration;
+        }
+
+    </script>
+</body>
+</html>
