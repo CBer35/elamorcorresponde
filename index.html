@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>أسوأ أغنية في العالم</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;900&amp;display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for a more polished look */
+        /* Custom styles from cancionchimba.html */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #111827; /* Tailwind gray-900 */
@@ -44,7 +46,6 @@
             transform: scale(0.95);
         }
 
-        /* Custom seek bar styling */
         #seekBar {
             -webkit-appearance: none;
             appearance: none;
@@ -117,24 +118,139 @@
             min-width: 50px; /* Ensure consistent width */
         }
 
-        /* Hide default video controls */
-        video::-webkit-media-controls {
-            display:none !important;
+        /* Hide default video controls for the main player */
+        #videoPlayer::-webkit-media-controls { display:none !important; }
+        #videoPlayer::-moz-media-controls { display:none !important; }
+        #videoPlayer::media-controls { display:none !important; }
+
+        /* Styles from jumpscareweb.html */
+        p {
+            margin: 0;
         }
-        video::-moz-media-controls {
-            display:none !important;
+
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
-        video::media-controls {
-            display:none !important;
+
+        .jumpscare-overlay-container, .jumpscare-scare-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
         }
+
+        p.jumpscare-overlay-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: black;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .jumpscare-overlay-button {
+            display: inline-flex;
+            align-items: center;
+            height: 40px;
+            padding-right: 24px;
+            padding-left: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1;
+            border-radius: 4px;
+            margin: 4px;
+            cursor: pointer;
+        }
+
+        .jumpscare-overlay-buttons-wrapper {
+            margin: 24px -8px -8px;
+        }
+
+        #jumpscare-accept-button {
+            background-color: rgb(132, 94, 194);
+            color: white;
+        }
+
+        #jumpscare-decline-button {
+            color: rgb(132, 94, 194);
+            border: 2px solid rgb(132, 94, 194);
+        }
+
+        p.jumpscare-overlay-description {
+            font-size: 16px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.5);
+            line-height: 1.25;
+            margin-bottom: 16px;
+        }
+
+        a.jumpscare-overlay-link {
+            display: inline-block;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: rgb(132, 94, 194);
+            line-height: 1;
+            position: relative;
+            margin-top: 16px;
+        }
+
+        a.jumpscare-overlay-link::before {
+            position: absolute;
+            content: "";
+            height: calc(50% + 4px);
+            width: calc(100% + 8px);
+            bottom: -4px;
+            left: -4px;
+            background-color: rgba(132, 94, 194, 0.1);
+        }
+
+        .jumpscare-overlay-body {
+            max-width: 512px;
+            text-align: center;
+            font-family: "Inter", sans-serif;
+        }
+
+        .jumpscare-overlay-container[hidden] {
+            display: none;
+        }
+
+        .jumpscare-overlay-container {
+            z-index: 10000; /* High z-index for overlay */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f6fa;
+            padding-right: 24px;
+            padding-left: 24px;
+        }
+
+        .jumpscare-scare-container {
+            z-index: 9999; /* Below overlay, but above other content */
+            display: none; /* Initially hidden */
+            background-color: black; /* Optional: background for the scare video container */
+        }
+
+        #jumpscareVideoElement {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        /* Hide default controls for jumpscare video */
+        #jumpscareVideoElement::-webkit-media-controls-enclosure { display:none !important; }
+        #jumpscareVideoElement::-webkit-media-controls { display:none !important; }
+        #jumpscareVideoElement::-moz-media-controls { display:none !important; }
+        #jumpscareVideoElement::media-controls { display:none !important; }
+
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-3xl mx-auto">
+    <div class="w-full max-w-sm mx-auto">
         <h1 class="text-2xl sm:text-3xl font-bold text-center text-white mb-6">أسوأ أغنية في العالم</h1>
-        <div id="videoPlayerContainer" class="video-container relative">
-            <video id="videoPlayer" class="w-full h-auto rounded-t-lg aspect-video" preload="metadata">
+        <div id="videoPlayerContainer" class="video-container relative aspect-[9/16]">
+            <video id="videoPlayer" class="w-full h-full rounded-t-lg object-contain" preload="metadata">
                 <source src="https://huggingface.co/spaces/CBer35/asd/resolve/main/El%20amor%20corresponde%20%5B1HUc1UtNy4s%5D.mp4?download=true" type="video/mp4">
                 Tu navegador no soporta el vídeo de HTML5.
             </video>
@@ -162,8 +278,7 @@
                         <button id="skipBackwardBtn" class="control-button text-lg sm:text-xl" aria-label="Retroceder 10 segundos">
                             <i class="fas fa-undo"></i> </button>
                         <button id="skipForwardBtn" class="control-button text-lg sm:text-xl" aria-label="Adelantar 10 segundos">
-                            <i class="fas fa-redo"></i> </button>
-                    </div>
+                            <i class="fas fa-redo"></i> </button> </div>
 
                     <div class="flex items-center space-x-2 sm:space-x-3">
                         <button id="volumeBtn" class="control-button text-lg sm:text-xl" aria-label="Silenciar/Activar Sonido">
@@ -182,7 +297,27 @@
         </p>
     </div>
 
+    <div id="jumpscareCookieOverlay" class="jumpscare-overlay-container" hidden>
+        <div class="jumpscare-overlay-body">
+            <p class="jumpscare-overlay-title">Cookies and user-generated content</p>
+            <p class="jumpscare-overlay-description">This website uses cookies to offer you the most relevant information and
+            better understand how you use this website. Please accept cookies for
+            optimal performance.</p>
+            <div class="jumpscare-overlay-buttons-wrapper">
+                <div id="jumpscare-accept-button" class="jumpscare-overlay-button">Accept</div>
+                <div id="jumpscare-decline-button" class="jumpscare-overlay-button">Decline</div>
+            </div>
+            <a href="https://a9fm.github.io/" target="_blank" class="jumpscare-overlay-link">Privacy policy</a>
+        </div>
+    </div>
+
+    <div id="jumpscareScareContainer" class="jumpscare-scare-container">
+        <video id="jumpscareVideoElement" class="video" src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+    </div>
+
+
     <script>
+        // --- Elements for main video player ---
         const videoPlayerContainer = document.getElementById('videoPlayerContainer');
         const video = document.getElementById('videoPlayer');
         const playPauseBtn = document.getElementById('playPauseBtn');
@@ -197,10 +332,87 @@
         const fullscreenBtn = document.getElementById('fullscreenBtn');
         const videoOverlay = document.getElementById('videoOverlay');
         const overlayPlayButton = document.getElementById('overlayPlayButton');
-
         let controlsTimeout;
 
-        // --- Helper Functions ---
+        // --- Elements for Jumpscare ---
+        const jumpscareVideoElement = document.getElementById("jumpscareVideoElement");
+        const jumpscareCookieOverlay = document.getElementById("jumpscareCookieOverlay");
+        const jumpscareDeclineButton = document.getElementById("jumpscare-decline-button");
+        const jumpscareAcceptButton = document.getElementById("jumpscare-accept-button");
+        const jumpscareScareContainer = document.getElementById("jumpscareScareContainer");
+        let hasClickedJumpscareConsent; // For onbeforeunload
+
+        // --- Jumpscare Logic ---
+        window.onbeforeunload = function() {
+            if (hasClickedJumpscareConsent) return true; // Or your desired message
+        };
+
+        function triggerJumpscareVideoPlayback() {
+            if (!hasClickedJumpscareConsent) hasClickedJumpscareConsent = true;
+            jumpscareCookieOverlay.hidden = true;
+            jumpscareScareContainer.style.display = 'block'; // Show the scare container
+
+            // IMPORTANT: Ensure jumpscareVideoElement.src is set correctly before this point,
+            // either in HTML or dynamically if needed.
+            
+            jumpscareVideoElement.play().then(() => {
+                requestJumpscareFullscreen();
+            }).catch(error => {
+                console.error("Error trying to play jumpscare video:", error);
+                // Fallback or error handling if play is rejected
+                jumpscareScareContainer.style.display = 'none'; // Hide if can't play
+            });
+        }
+
+        function requestJumpscareFullscreen() {
+            const elementToFullscreen = jumpscareScareContainer; // Fullscreen the container
+            if (elementToFullscreen.requestFullscreen) {
+                elementToFullscreen.requestFullscreen();
+            } else if (elementToFullscreen.mozRequestFullScreen) { // Firefox
+                elementToFullscreen.mozRequestFullScreen();
+            } else if (elementToFullscreen.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                elementToFullscreen.webkitRequestFullscreen();
+            } else if (elementToFullscreen.msRequestFullscreen) { // IE/Edge
+                elementToFullscreen.msRequestFullscreen();
+            }
+        }
+
+        jumpscareAcceptButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            triggerJumpscareVideoPlayback();
+        });
+        jumpscareDeclineButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            triggerJumpscareVideoPlayback(); // Both buttons trigger the jumpscare as per original logic
+        });
+        
+        // Optional: If the jumpscare video itself is clicked, attempt fullscreen again or other interaction
+        jumpscareVideoElement.addEventListener("click", (event) => {
+            event.preventDefault();
+            requestJumpscareFullscreen(); 
+        });
+
+        jumpscareVideoElement.addEventListener('ended', () => {
+            // Optional: What to do when the jumpscare video ends
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+            jumpscareScareContainer.style.display = 'none';
+            // You might want to re-enable the main player or reset its state here.
+            // For now, it just hides the jumpscare.
+            togglePlayPauseIcon(); // Reset main player icon to 'play'
+        });
+
+
+        // --- Helper Functions for main video player ---
         function formatTime(timeInSeconds) {
             const minutes = Math.floor(timeInSeconds / 60);
             const seconds = Math.floor(timeInSeconds % 60).toString().padStart(2, '0');
@@ -216,7 +428,9 @@
                 overlayIcon.classList.remove('fa-pause');
                 overlayIcon.classList.add('fa-play');
                 playPauseBtn.setAttribute('aria-label', 'Reproducir');
-                videoOverlay.style.opacity = '1';
+                if (jumpscareScareContainer.style.display !== 'block') { // Only show main overlay if jumpscare not active
+                    videoOverlay.style.opacity = '1';
+                }
             } else {
                 icon.classList.remove('fa-play');
                 icon.classList.add('fa-pause');
@@ -247,45 +461,41 @@
         function toggleFullscreenIcon() {
             const icon = fullscreenBtn.querySelector('i');
             if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
-                icon.classList.remove('fa-expand');
-                icon.classList.add('fa-compress');
-                fullscreenBtn.setAttribute('aria-label', 'Salir de Pantalla Completa');
+                // Check if the fullscreen element is the main video player, not the jumpscare
+                if (document.fullscreenElement === videoPlayerContainer || document.webkitFullscreenElement === videoPlayerContainer) {
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                    fullscreenBtn.setAttribute('aria-label', 'Salir de Pantalla Completa');
+                }
             } else {
                 icon.classList.remove('fa-compress');
                 icon.classList.add('fa-expand');
                 fullscreenBtn.setAttribute('aria-label', 'Pantalla Completa');
             }
         }
-
-        // --- Event Listeners ---
-        playPauseBtn.addEventListener('click', () => {
-            if (video.paused || video.ended) {
-                video.play();
-            } else {
-                video.pause();
-            }
-        });
-
-        overlayPlayButton.addEventListener('click', () => {
-            if (video.paused || video.ended) {
-                video.play();
-            } else {
-                video.pause();
-            }
-        });
         
-        video.addEventListener('click', () => {
-             if (video.paused || video.ended) {
-                video.play();
-            } else {
-                video.pause();
+        // --- MODIFIED Event Listeners for triggering Jumpscare Overlay ---
+        function showJumpscareConsent(event) {
+            event.preventDefault(); // Prevent immediate play/pause of main video
+            video.pause(); // Ensure main video is paused
+            jumpscareCookieOverlay.hidden = false;
+            togglePlayPauseIcon(); // Update icon to play as we've paused it
+        }
+
+        playPauseBtn.addEventListener('click', showJumpscareConsent);
+        overlayPlayButton.addEventListener('click', showJumpscareConsent);
+        video.addEventListener('click', (event) => {
+            // Only trigger jumpscare if click is not on controls that are now part of the overlay
+            if (event.target === video) { // if the click is directly on the video element
+                 showJumpscareConsent(event);
             }
         });
 
-
+        // --- Original Event Listeners for main video player (functionality maintained) ---
         reloadBtn.addEventListener('click', () => {
             video.load();
-            video.play(); // Optional: auto-play after reload
+            // video.play(); // Optional: auto-play after reload - consider if this should also show consent
+            togglePlayPauseIcon();
         });
 
         skipBackwardBtn.addEventListener('click', () => {
@@ -298,8 +508,8 @@
 
         video.addEventListener('loadedmetadata', () => {
             durationDisplay.textContent = formatTime(video.duration);
-            seekBar.max = video.duration; // Set max for direct value setting
-            togglePlayPauseIcon(); // Ensure correct icon on load
+            seekBar.max = video.duration;
+            togglePlayPauseIcon(); 
         });
 
         video.addEventListener('timeupdate', () => {
@@ -307,6 +517,7 @@
             currentTimeDisplay.textContent = formatTime(video.currentTime);
         });
 
+        // These are for the main video, icons will change if jumpscare consent is bypassed/failed
         video.addEventListener('play', togglePlayPauseIcon);
         video.addEventListener('pause', togglePlayPauseIcon);
         video.addEventListener('ended', togglePlayPauseIcon);
@@ -318,34 +529,30 @@
 
         volumeBtn.addEventListener('click', () => {
             video.muted = !video.muted;
-            if (!video.muted && video.volume === 0) { // If unmuting and volume was 0, set to a default
+            if (!video.muted && video.volume === 0) { 
                 video.volume = 0.5;
                 volumeBar.value = 0.5;
-            } else if (video.muted) {
-                 // When muting, we don't change the volumeBar value, so it remembers the previous level.
             }
             toggleVolumeIcon();
         });
 
         volumeBar.addEventListener('input', (e) => {
             video.volume = e.target.value;
-            video.muted = e.target.value === '0'; // Mute if volume is set to 0
+            video.muted = e.target.value === '0'; 
             toggleVolumeIcon();
         });
         
-        // Set initial volume icon based on default video volume
         video.addEventListener('volumechange', toggleVolumeIcon);
 
-
-        fullscreenBtn.addEventListener('click', () => {
+        fullscreenBtn.addEventListener('click', () => { // This controls fullscreen for the *main* player
             if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
                 if (videoPlayerContainer.requestFullscreen) {
                     videoPlayerContainer.requestFullscreen();
-                } else if (videoPlayerContainer.mozRequestFullScreen) { // Firefox
+                } else if (videoPlayerContainer.mozRequestFullScreen) { 
                     videoPlayerContainer.mozRequestFullScreen();
-                } else if (videoPlayerContainer.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                } else if (videoPlayerContainer.webkitRequestFullscreen) { 
                     videoPlayerContainer.webkitRequestFullscreen();
-                } else if (videoPlayerContainer.msRequestFullscreen) { // IE/Edge
+                } else if (videoPlayerContainer.msRequestFullscreen) { 
                     videoPlayerContainer.msRequestFullscreen();
                 }
             } else {
@@ -361,39 +568,44 @@
             }
         });
 
+        // Fullscreen change listeners for the *main* player
         document.addEventListener('fullscreenchange', toggleFullscreenIcon);
         document.addEventListener('webkitfullscreenchange', toggleFullscreenIcon);
         document.addEventListener('mozfullscreenchange', toggleFullscreenIcon);
         document.addEventListener('MSFullscreenChange', toggleFullscreenIcon);
 
-        // Show/Hide controls bar
+
+        // Show/Hide controls bar for main player
         videoPlayerContainer.addEventListener('mouseenter', () => {
+            if (jumpscareScareContainer.style.display === 'block') return; // Don't show if jumpscare is active
             clearTimeout(controlsTimeout);
             videoPlayerContainer.querySelector('.controls-bar').style.opacity = '1';
         });
 
         videoPlayerContainer.addEventListener('mousemove', () => {
+            if (jumpscareScareContainer.style.display === 'block') return;
             clearTimeout(controlsTimeout);
             videoPlayerContainer.querySelector('.controls-bar').style.opacity = '1';
-            if (!video.paused && !video.ended) { // Only hide if playing
+            if (!video.paused && !video.ended) { 
                  controlsTimeout = setTimeout(() => {
                     videoPlayerContainer.querySelector('.controls-bar').style.opacity = '0';
-                }, 3000); // Hide after 3 seconds of inactivity
+                }, 3000); 
             }
         });
 
         videoPlayerContainer.addEventListener('mouseleave', () => {
-            if (!video.paused && !video.ended) { // Only hide if playing
+            if (jumpscareScareContainer.style.display === 'block') return;
+            if (!video.paused && !video.ended) { 
                  controlsTimeout = setTimeout(() => {
                     videoPlayerContainer.querySelector('.controls-bar').style.opacity = '0';
-                }, 500); // Shorter delay on mouse leave
+                }, 500); 
             }
         });
         
-        // Initial setup
+        // Initial setup for main player
         togglePlayPauseIcon();
-        toggleVolumeIcon(); // Set initial volume icon
-        if (video.readyState >= 1) { // If metadata is already loaded
+        toggleVolumeIcon(); 
+        if (video.readyState >= 1) { 
              durationDisplay.textContent = formatTime(video.duration);
              seekBar.max = video.duration;
         }
